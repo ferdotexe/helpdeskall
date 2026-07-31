@@ -4,10 +4,13 @@ import com.helpdeskall.HelpDeskAll.domain.User;
 import com.helpdeskall.HelpDeskAll.dto.UserRegisterDTO;
 import com.helpdeskall.HelpDeskAll.dto.UserResponseDTO;
 import com.helpdeskall.HelpDeskAll.exception.EmailAlreadyExistsException;
+import com.helpdeskall.HelpDeskAll.exception.UserNotFoundException;
 import com.helpdeskall.HelpDeskAll.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,19 @@ public class UserService {
         User saved = userRepository.save(user);
 
         return UserResponseDTO.fromEntity(saved);
+    }
+
+    public List<UserResponseDTO> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserResponseDTO::fromEntity)
+                .toList();
+    }
+
+    public UserResponseDTO findById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        return UserResponseDTO.fromEntity(user);
     }
 }
